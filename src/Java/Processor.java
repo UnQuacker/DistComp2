@@ -78,7 +78,7 @@ public class Processor
             createFile(fileName);
         } else if (request.contains("/calculate/")) {
             String calculate = request.replaceAll("/calculate/","");
-            System.out.println("CALCULATE: "+calculate);
+            System.out.println("CALCULATE: "+calculate+"\n");
             int calculate_int = Integer.parseInt(calculate);
             int fibonacci = CalculateFibonacci(calculate_int);
             System.out.println(fibonacci);

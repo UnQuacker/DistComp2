@@ -40,7 +40,7 @@ public class HttpRequest {
             builder.append(key).append(": ").append(headers.get(key)).append("\n");
         }
         if (messageBody != null && !messageBody.isEmpty()) {
-            builder.append("\r\n").append(messageBody);
+            builder.append("\n").append(messageBody);
         }
         return builder.toString();
     }

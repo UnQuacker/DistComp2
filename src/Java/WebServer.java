@@ -15,11 +15,23 @@ public class WebServer {
         // The maximum queue length for incoming connection
         int queueLength = args.length > 2 ? Integer.parseInt(args[2]) : 50;
 
+        ThreadSafeQueue queue = new ThreadSafeQueue();
+
+        int maxNumOfThreads = 6;
+        int currNumOfThreads = 0;
+
+        while(currNumOfThreads<maxNumOfThreads){
+            ThreadRunner threadRunner = new ThreadRunner(queue);
+            threadRunner.start();
+            currNumOfThreads++;
+        }
+
         try (ServerSocket serverSocket = new ServerSocket(port, queueLength)) {
             System.out.println("Web Server is starting up, listening at port " + port + ".");
             System.out.println("You can access http://localhost:" + port + " now.");
 
             while (true) {
+
                 // Make the server socket wait for the next client request
                 Socket socket = serverSocket.accept();
                 System.out.println("Got connection!");
@@ -31,16 +43,21 @@ public class WebServer {
                 // Get request
                 HttpRequest request = HttpRequest.parse(input);
 
-                // Process request
-                Processor proc = new Processor(socket, request);
-//                proc.start();
-                proc.process();
+                Input struct = new Input(socket, request);
+                
+                queue.add(struct);
+
+//                Processor proc = new Processor(struct.socket,struct.request);
+//                proc.process();
             }
         }
         catch (IOException ex) {
             ex.printStackTrace();
         }
         finally {
+            for (int i = 0; i < currNumOfThreads; i++) {
+                queue.add(null);
+            }
             System.out.println("Server has been shutdown!");
         }
     }
